@@ -36,10 +36,17 @@ Instructions: {props.get('instruction', 'No specific instructions provided')}
 
 @mcp.tool()
 async def get_alerts(state: str) -> str:
-    """Get weather alerts for a US state.
-
+    """Get active weather alerts and warnings for a US state using the National Weather Service API.
+    
+    Fetches and returns detailed information about current severe weather conditions,
+    natural disasters, and other emergency information for the specified state.
+    
     Args:
-        state: Two-letter US state code (e.g. CA, NY)
+        state: Two-letter US state code (e.g. CA for California, NY for New York)
+        
+    Returns:
+        Formatted text with alert details including event type, affected area, 
+        severity, description and instructions
     """
     url = f"{NWS_API_BASE}/alerts/active/area/{state}"
     data = await make_nws_request(url)
@@ -55,11 +62,20 @@ async def get_alerts(state: str) -> str:
 
 @mcp.tool()
 async def get_forecast(latitude: float, longitude: float) -> str:
-    """Get weather forecast for a location.
-
+    """Get detailed weather forecast for a specific location using the National Weather Service API.
+    
+    Fetches and returns temperature, wind conditions, and forecast information for
+    the next several time periods (day and night). 
+    
     Args:
-        latitude: Latitude of the location
-        longitude: Longitude of the location
+        latitude: Latitude of the location in decimal degrees (-90 to 90)
+        longitude: Longitude of the location in decimal degrees (-180 to 180)
+        
+    Returns:
+        Formatted text with forecast details for the next 5 periods
+        
+    Note:
+        This API only works for locations within the United States.
     """
     # First get the forecast grid endpoint
     points_url = f"{NWS_API_BASE}/points/{latitude},{longitude}"

@@ -46,8 +46,8 @@ function formatAlert(feature) {
 }
 //----------------------------------------------------------------------
 // Register weather tools
-server.tool("get-alerts", "Get weather alerts for a state", {
-    state: z.string().length(2).describe("Two-letter state code (e.g. CA, NY)"),
+server.tool("get-alerts", "Get active weather alerts and warnings for a US state using the National Weather Service API. Returns details about severe weather conditions, natural disasters, and other emergency information for the specified state.", {
+    state: z.string().length(2).describe("Two-letter US state code (e.g. CA for California, NY for New York)"),
 }, async ({ state }) => {
     const stateCode = state.toUpperCase();
     const alertsUrl = `${NWS_API_BASE}/alerts?area=${stateCode}`;
@@ -84,9 +84,9 @@ server.tool("get-alerts", "Get weather alerts for a state", {
         ],
     };
 });
-server.tool("get-forecast", "Get weather forecast for a location", {
-    latitude: z.number().min(-90).max(90).describe("Latitude of the location"),
-    longitude: z.number().min(-180).max(180).describe("Longitude of the location"),
+server.tool("get-forecast", "Get detailed weather forecast for a specific location using the National Weather Service API. Returns temperature, wind conditions, and forecast information for the next several periods. Note: Only works for locations within the United States.", {
+    latitude: z.number().min(-90).max(90).describe("Latitude of the location (decimal degrees)"),
+    longitude: z.number().min(-180).max(180).describe("Longitude of the location (decimal degrees)"),
 }, async ({ latitude, longitude }) => {
     // Get grid point data
     const pointsUrl = `${NWS_API_BASE}/points/${latitude.toFixed(4)},${longitude.toFixed(4)}`;

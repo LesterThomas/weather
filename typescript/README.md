@@ -39,3 +39,43 @@ Add the following MCP Server:
 
 ```
 
+## Example Prompt Templates
+
+### Weather Alerts by State
+Use this prompt template to get current weather alerts for a specific US state:
+
+```
+I need to know about any weather alerts or warnings in [STATE].
+Can you check the current alerts for me using the weather tool?
+```
+
+Example:
+```
+I need to know about any weather alerts or warnings in California.
+Can you check the current alerts for me using the weather tool?
+```
+
+### Weather Forecast by Location
+Use this prompt template to get a detailed weather forecast for a specific location:
+
+```
+What's the weather forecast for [CITY NAME] at coordinates [LATITUDE], [LONGITUDE]?
+Please provide details about temperature and conditions.
+```
+
+Example:
+```
+What's the weather forecast for San Francisco at coordinates 37.7749, -122.4194?
+Please provide details about temperature and conditions.
+```
+
+### Combined Usage
+You can also combine both tools in a single conversation:
+
+```
+I'm planning a trip to [STATE] and will be staying near coordinates [LATITUDE], [LONGITUDE].
+Are there any weather alerts I should be aware of in the state? 
+And what's the forecast for my specific location for the next few days?
+```
+
+Note: This MCP server only provides data for locations within the United States as it uses the National Weather Service API.
