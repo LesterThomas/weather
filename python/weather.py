@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, List, Dict
 import httpx
 from mcp.server.fastmcp import FastMCP
 
@@ -109,4 +109,70 @@ Forecast: {period['detailedForecast']}
 if __name__ == "__main__":
     # Initialize and run the server
     mcp.run(transport='stdio')
+
+
+# Example prompt templates
+@mcp.prompt(name="alert_by_state", description="Get current weather alerts for a specific US state")
+def alert_by_state(state: str) -> List[Dict[str, Any]]:
+    """Generate a prompt for getting weather alerts by state code.
+    
+    Args:
+        state: Two-letter US state code (e.g. CA for California, TX for Texas)
+        
+    Returns:
+        A prompt template to check for active weather alerts
+    """
+    return [
+        {
+            "role": "user",
+            "content": f"""What are the current weather alerts for {state}?
+Please use the weather tool to check for any active alerts or warnings."""
+        }
+    ]
+
+@mcp.prompt(name="forecast_by_location", description="Get weather forecast for a specific location by coordinates")
+def forecast_by_location(location_name: str, latitude: float, longitude: float) -> List[Dict[str, Any]]:
+    """Generate a prompt for getting weather forecast by coordinates.
+    
+    Args:
+        location_name: Name of the location (for reference only)
+        latitude: Latitude of the location in decimal degrees
+        longitude: Longitude of the location in decimal degrees
+        
+    Returns:
+        A prompt template to get the detailed weather forecast for a location
+    """
+    return [
+        {
+            "role": "user",
+            "content": f"""I need a weather forecast for {location_name} at latitude {latitude} and longitude {longitude}.
+Can you tell me the temperature, wind conditions, and general forecast?"""
+        }
+    ]
+
+@mcp.prompt(name="trip_planning", description="Get weather alerts and forecasts for a planned trip")
+def trip_planning(state: str, locations: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Generate a prompt for planning a trip with multiple locations.
+    
+    Args:
+        state: Two-letter US state code for the trip state
+        locations: List of locations with their names and coordinates
+        
+    Returns:
+        A prompt template to check weather alerts and forecasts for a trip
+    """
+    # Format locations for the prompt
+    location_text = ""
+    for loc in locations:
+        location_text += f"- {loc['name']} at coordinates {loc['latitude']}, {loc['longitude']}\n"
+    
+    return [
+        {
+            "role": "user",
+            "content": f"""I'm planning a trip to {state} and will be visiting several locations:
+{location_text}
+Are there any weather alerts in the state I should know about?
+What's the forecast for each of these locations?"""
+        }
+    ]
     
