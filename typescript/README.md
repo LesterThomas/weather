@@ -69,7 +69,7 @@ What's the weather forecast for San Francisco at coordinates 37.7749, -122.4194?
 Please provide details about temperature and conditions.
 ```
 
-### Combined Usage
+### Trip Planning
 You can also combine both tools in a single conversation:
 
 ```
