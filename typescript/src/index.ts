@@ -1,14 +1,14 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { z } from "zod";
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { z } from 'zod';
 
-const NWS_API_BASE = "https://api.weather.gov";
-const USER_AGENT = "weather-app/1.0";
+const NWS_API_BASE = 'https://api.weather.gov';
+const USER_AGENT = 'weather-app/1.0';
 
 // Create server instance
 const server = new McpServer({
-  name: "weather",
-  version: "1.0.0",
+  name: 'weather',
+  version: '1.0.0',
   capabilities: {
     resources: {},
     tools: {},
@@ -21,8 +21,8 @@ const server = new McpServer({
 // Helper function for making NWS API requests
 async function makeNWSRequest<T>(url: string): Promise<T | null> {
   const headers = {
-    "User-Agent": USER_AGENT,
-    Accept: "application/geo+json",
+    'User-Agent': USER_AGENT,
+    Accept: 'application/geo+json',
   };
 
   try {
@@ -32,7 +32,7 @@ async function makeNWSRequest<T>(url: string): Promise<T | null> {
     }
     return (await response.json()) as T;
   } catch (error) {
-    console.error("Error making NWS request:", error);
+    console.error('Error making NWS request:', error);
     return null;
   }
 }
@@ -51,13 +51,13 @@ interface AlertFeature {
 function formatAlert(feature: AlertFeature): string {
   const props = feature.properties;
   return [
-    `Event: ${props.event || "Unknown"}`,
-    `Area: ${props.areaDesc || "Unknown"}`,
-    `Severity: ${props.severity || "Unknown"}`,
-    `Status: ${props.status || "Unknown"}`,
-    `Headline: ${props.headline || "No headline"}`,
-    "---",
-  ].join("\n");
+    `Event: ${props.event || 'Unknown'}`,
+    `Area: ${props.areaDesc || 'Unknown'}`,
+    `Severity: ${props.severity || 'Unknown'}`,
+    `Status: ${props.status || 'Unknown'}`,
+    `Headline: ${props.headline || 'No headline'}`,
+    '---',
+  ].join('\n');
 }
 
 interface ForecastPeriod {
@@ -88,10 +88,10 @@ interface ForecastResponse {
 //----------------------------------------------------------------------
 // Register weather tools
 server.tool(
-  "get-alerts",
-  "Get weather alerts for a state",
+  'get-alerts',
+  'Get weather alerts for a state',
   {
-    state: z.string().length(2).describe("Two-letter state code (e.g. CA, NY)"),
+    state: z.string().length(2).describe('Two-letter state code (e.g. CA, NY)'),
   },
   async ({ state }) => {
     const stateCode = state.toUpperCase();
@@ -102,8 +102,8 @@ server.tool(
       return {
         content: [
           {
-            type: "text",
-            text: "Failed to retrieve alerts data",
+            type: 'text',
+            text: 'Failed to retrieve alerts data',
           },
         ],
       };
@@ -114,7 +114,7 @@ server.tool(
       return {
         content: [
           {
-            type: "text",
+            type: 'text',
             text: `No active alerts for ${stateCode}`,
           },
         ],
@@ -122,12 +122,12 @@ server.tool(
     }
 
     const formattedAlerts = features.map(formatAlert);
-    const alertsText = `Active alerts for ${stateCode}:\n\n${formattedAlerts.join("\n")}`;
+    const alertsText = `Active alerts for ${stateCode}:\n\n${formattedAlerts.join('\n')}`;
 
     return {
       content: [
         {
-          type: "text",
+          type: 'text',
           text: alertsText,
         },
       ],
@@ -136,11 +136,11 @@ server.tool(
 );
 
 server.tool(
-  "get-forecast",
-  "Get weather forecast for a location",
+  'get-forecast',
+  'Get weather forecast for a location',
   {
-    latitude: z.number().min(-90).max(90).describe("Latitude of the location"),
-    longitude: z.number().min(-180).max(180).describe("Longitude of the location"),
+    latitude: z.number().min(-90).max(90).describe('Latitude of the location'),
+    longitude: z.number().min(-180).max(180).describe('Longitude of the location'),
   },
   async ({ latitude, longitude }) => {
     // Get grid point data
@@ -151,7 +151,7 @@ server.tool(
       return {
         content: [
           {
-            type: "text",
+            type: 'text',
             text: `Failed to retrieve grid point data for coordinates: ${latitude}, ${longitude}. This location may not be supported by the NWS API (only US locations are supported).`,
           },
         ],
@@ -163,8 +163,8 @@ server.tool(
       return {
         content: [
           {
-            type: "text",
-            text: "Failed to get forecast URL from grid point data",
+            type: 'text',
+            text: 'Failed to get forecast URL from grid point data',
           },
         ],
       };
@@ -176,8 +176,8 @@ server.tool(
       return {
         content: [
           {
-            type: "text",
-            text: "Failed to retrieve forecast data",
+            type: 'text',
+            text: 'Failed to retrieve forecast data',
           },
         ],
       };
@@ -188,8 +188,8 @@ server.tool(
       return {
         content: [
           {
-            type: "text",
-            text: "No forecast periods available",
+            type: 'text',
+            text: 'No forecast periods available',
           },
         ],
       };
@@ -198,20 +198,20 @@ server.tool(
     // Format forecast periods
     const formattedForecast = periods.map((period: ForecastPeriod) =>
       [
-        `${period.name || "Unknown"}:`,
-        `Temperature: ${period.temperature || "Unknown"}°${period.temperatureUnit || "F"}`,
-        `Wind: ${period.windSpeed || "Unknown"} ${period.windDirection || ""}`,
-        `${period.shortForecast || "No forecast available"}`,
-        "---",
-      ].join("\n"),
+        `${period.name || 'Unknown'}:`,
+        `Temperature: ${period.temperature || 'Unknown'}°${period.temperatureUnit || 'F'}`,
+        `Wind: ${period.windSpeed || 'Unknown'} ${period.windDirection || ''}`,
+        `${period.shortForecast || 'No forecast available'}`,
+        '---',
+      ].join('\n'),
     );
 
-    const forecastText = `Forecast for ${latitude}, ${longitude}:\n\n${formattedForecast.join("\n")}`;
+    const forecastText = `Forecast for ${latitude}, ${longitude}:\n\n${formattedForecast.join('\n')}`;
 
     return {
       content: [
         {
-          type: "text",
+          type: 'text',
           text: forecastText,
         },
       ],
@@ -226,10 +226,10 @@ server.tool(
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error("Weather MCP Server running on stdio");
+  console.error('Weather MCP Server running on stdio');
 }
 
 main().catch((error) => {
-  console.error("Fatal error in main():", error);
+  console.error('Fatal error in main():', error);
   process.exit(1);
 });
